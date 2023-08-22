@@ -4,7 +4,7 @@
  * get_precision - Calculates the precision for printing
  * @format: Formatted string in which to print the arguments
  * @i: List of arguments to be printed.
- * @list: list of arguments.
+ * @list: List of arguments.
  *
  * Return: Precision.
  */
@@ -20,7 +20,7 @@ int get_precision(const char *format, int *i, va_list list)
 
 	for (curr_i += 1; format[curr_i] != '\0'; curr_i++)
 	{
-		if (is_digit(format[curr_i]))
+		if (format[curr_i] >= '0' && format[curr_i] <= '9')
 		{
 			precision *= 10;
 			precision += format[curr_i] - '0';
