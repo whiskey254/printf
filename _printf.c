@@ -1,64 +1,78 @@
-#include "main.h"
+#include"main.h"
+#include <stdarg.h>
+#include <stdio.h>
+#include <string.h>
 
 /**
- * _printf - Printf function
- * @format: format.
- * Return: Printed chars.
+ * printf function that supports basic format specifiers.
+ *
+ * @param format The format string containing format specifiers.
+ * @param ... Variable arguments corresponding to the format specifiers.
+ * @return The total number of characters printed.
  */
 int _printf(const char *format, ...)
 {
-	int i, printed = 0, printed_chars = 0;
-	int flags, width, precision, size, buff_ind = 0;
-	va_list list;
-	char buffer[BUFF_SIZE];
+	unsigned int i, s_count, count = 0;
+	va_list args;
 
-	if (format == NULL)
-		return (-1);
+	va_start(args, format);
 
-	va_start(list, format);
-
-	for (i = 0; format && format[i] != '\0'; i++)
+	for (i = 0; format[i] != '\0'; i++)
 	{
 		if (format[i] != '%')
 		{
-			buffer[buff_ind++] = format[i];
-			if (buff_ind == BUFF_SIZE)
-				print_buffer(buffer, &buff_ind);
-			/* write(1, &format[i], 1);*/
-			printed_chars++;
+			my_putchar(format[i]);
 		}
-		else
+		else if (format[i + 1] == 'c')
 		{
-			print_buffer(buffer, &buff_ind);
-			flags = get_flags(format, &i);
-			width = get_width(format, &i, list);
-			precision = get_precision(format, &i, list);
-			size = get_size(format, &i);
-			++i;
-			printed = handle_print(format, &i, list, buffer,
-				flags, width, precision, size);
-			if (printed == -1)
-				return (-1);
-			printed_chars += printed;
+			my_putchar(va_arg(args, int));
+			i++;
+		}
+		else if (format[i + 1] == 's')
+		{
+			const char *str = va_arg(args, const char *);
+			s_count = my_puts(str);
+			i++;
+			count += s_count;
+		}
+		else if (format[i + 1] == '%')
+		{
+			my_putchar('%');
+			i++;
+			count++;
 		}
 	}
 
-	print_buffer(buffer, &buff_ind);
-
-	va_end(list);
-
-	return (printed_chars);
+	va_end(args);
+	return count;
 }
 
 /**
- * print_buffer - Prints the contents of the buffer if it exist
- * @buffer: Array of chars
- * @buff_ind: Index at which to add next char, represents the length.
+ * My puts function that prints a string and returns its length.
+ *
+ * @param c The input string.
+ * @return The length of the string.
  */
-void print_buffer(char buffer[], int *buff_ind)
+int my_puts(const char *c)
 {
-	if (*buff_ind > 0)
-		write(1, &buffer[0], *buff_ind);
+	int count = 0;
 
-	*buff_ind = 0;
+	if (c)
+	{
+		for (count = 0; c[count] != '\0'; count++)
+		{
+			my_putchar(c[count]);
+		}
+	}
+	return count;
+}
+
+/**
+ * Custom putchar function that prints a character.
+ *
+ * @param c The character to be printed.
+ */
+void my_putchar(char c)
+{
+	putchar(c);
 }
